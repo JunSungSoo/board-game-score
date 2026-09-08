@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>회원가입 | 보드게임 점수 계산기</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="style.css?v=20260903-auth2">
+</head>
+<body class="auth-page" data-auth-page="signup">
+  <main class="auth-page-shell">
+    <a class="auth-back-link" href="login.html">← 로그인으로</a>
+    <section class="auth-page-card" aria-labelledby="signup-title">
+      <div class="auth-brand" aria-hidden="true">🎲</div>
+      <h1 id="signup-title">회원가입</h1>
+      <p class="auth-lead">이름과 고유 아이디로 계정을 만들어요.</p>
+      <form id="signup-form" novalidate>
+        <label class="account-field">이름
+          <input id="signup-name" name="name" type="text" autocomplete="name" maxlength="20" required>
+        </label>
+        <label class="account-field">아이디
+          <div class="inline-input"><input id="signup-id" name="username" type="text" autocomplete="username" maxlength="20" autocapitalize="none" required><button class="btn ghost" id="signup-check-id" type="button">중복 확인</button></div>
+        </label>
+        <p class="account-feedback" id="signup-id-message" role="status"></p>
+        <label class="account-field">비밀번호
+          <input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="6" required>
+        </label>
+        <button class="btn block" id="signup-submit" type="submit">회원가입</button>
+      </form>
+      <p class="account-feedback" id="auth-message" role="status"></p>
+      <p class="account-note">이메일·전화번호 인증과 계정 찾기는 제공하지 않아요.</p>
+      <div class="auth-page-switch">이미 계정이 있나요? <a href="login.html">로그인</a></div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="supabase-config.js?v=20260903-auth2" defer></script>
+  <script src="auth.js?v=20260908-auth8" defer></script>
+</body>
+</html>

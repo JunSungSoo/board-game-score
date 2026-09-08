@@ -15,3 +15,12 @@ node_modules
 
 #!.yarn/cache
 .pnp.*
+
+.DS_Store
+.claude/
+.env*
+!.env.example
+dist/
+coverage/
+*.zip
+*.log
