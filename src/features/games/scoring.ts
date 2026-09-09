@@ -8,3 +8,9 @@ export function calculateSkullkingScore(round: number, bid: number, tricks: numb
 export function remainingTricks(round: number, tricks: number[]) {
   return Math.max(0, round - tricks.reduce((sum, value) => sum + value, 0));
 }
+
+export function calculateTichuTeamScore(cardA: number, oneTwo: 'none' | 'A' | 'B', callA = 0, callB = 0) {
+  if (oneTwo === 'A') return { a: 200 + callA, b: callB };
+  if (oneTwo === 'B') return { a: callA, b: 200 + callB };
+  return { a: cardA + callA, b: 100 - cardA + callB };
+}

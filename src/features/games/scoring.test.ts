@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateSkullkingScore, remainingTricks } from './scoring';
+import { calculateSkullkingScore, calculateTichuTeamScore, remainingTricks } from './scoring';
 
 describe('Skull King scoring', () => {
   it.each([
@@ -13,5 +13,14 @@ describe('Skull King scoring', () => {
     expect(remainingTricks(3, [0, 0, 1])).toBe(2);
     expect(remainingTricks(3, [1, 1, 1])).toBe(0);
     expect(remainingTricks(3, [0, 1, 1])).toBe(1);
+  });
+});
+
+describe('Tichu team scoring', () => {
+  it('adds declarations to the automatic 100-point card split', () => {
+    expect(calculateTichuTeamScore(65, 'none', 100, -100)).toEqual({ a: 165, b: -65 });
+  });
+  it('uses 200 points for a one-two finish before declaration scores', () => {
+    expect(calculateTichuTeamScore(50, 'B', 100, 200)).toEqual({ a: 100, b: 400 });
   });
 });
