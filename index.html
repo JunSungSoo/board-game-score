@@ -7,7 +7,6 @@
 <link rel="preload" as="image" href="assets/bg-skullking.png" fetchpriority="high">
 <link rel="preload" as="image" href="assets/bg-tichu.png" fetchpriority="high">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
-<link rel="stylesheet" href="style.css?v=20260903-auth2">
 </head>
 <body class="auth-checking">
 <div class="game-bg" id="game-bg" aria-hidden="true"></div>
@@ -332,12 +331,6 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="supabase-config.js?v=20260903-auth2" defer></script>
-<script src="account.js?v=20260903-auth4" defer></script>
-<script src="common.js?v=20260903-auth2" defer></script>
-<script src="game-skullking.js" defer></script>
-<script src="game-tichu.js" defer></script>
-<script src="game-generic.js" defer></script>
+<script type="module" src="/src/game-main.ts"></script>
 </body>
 </html>

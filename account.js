@@ -1,9 +1,8 @@
 (function () {
   "use strict";
 
-  var config = window.BOARD_GAME_SUPABASE || {};
-  var configured = Boolean(config.url && config.publishableKey && window.supabase);
-  var client = configured ? window.supabase.createClient(config.url, config.publishableKey) : null;
+  var client = window.ScoreServices.supabase;
+  var configured = Boolean(client);
   var session = null;
   var profile = null;
   var friends = [];
@@ -81,8 +80,7 @@
   }
 
   async function restoreSession() {
-    if (!client) { window.location.replace("login.html"); return; }
-    var result = await client.auth.getSession();
+    var result = client ? await client.auth.getSession() : { data: { session: null } };
     session = result.data.session;
     if (session) {
       try {
@@ -109,6 +107,7 @@
 
   async function signOut() {
     if (client && session) await client.auth.signOut();
+    window.ScoreServices.clearAccountCache();
     try { localStorage.removeItem(GUEST_SESSION_KEY); } catch (error) { /* 저장소 접근 불가 */ }
     session = null;
     profile = null;
@@ -170,12 +169,12 @@
   }
 
   async function renderHistory() {
-    var result = await client.rpc("my_game_history");
+    var result = await window.ScoreServices.accountRows("my_game_history", session.user.id);
     if (result.error) throw result.error;
     var list = $("history-list");
     if (!result.data.length) { list.innerHTML = '<p class="empty-state">완료된 게임 기록이 없어요.</p>'; return; }
     list.innerHTML = result.data.map(function (item) {
-      var date = new Date(item.ended_at).toLocaleDateString("ko-KR");
+      var date = window.ScoreServices.formatGameDate(item.ended_at);
       return '<div class="history-row"><div><strong>' + escapeHtml(gameLabel(item.game_id)) + '</strong><small>' + date +
         (item.team_name ? " · " + escapeHtml(item.team_name) : "") + '</small></div><div><b>' + item.final_score +
         '점</b><span>' + item.final_rank + '등</span></div></div>';
@@ -183,7 +182,7 @@
   }
 
   async function renderRankings() {
-    var result = await client.rpc("win_rankings");
+    var result = await window.ScoreServices.accountRows("win_rankings", session.user.id);
     if (result.error) throw result.error;
     var list = $("ranking-list");
     if (!result.data.length) { list.innerHTML = '<p class="empty-state">완료된 게임 기록이 없어요.</p>'; return; }
@@ -261,6 +260,7 @@
     var results = state.remoteParticipants.map(resultFor).filter(Boolean);
     var response = await client.rpc("finish_game_room", { requested_room_id: state.remoteRoomId, results: results });
     if (response.error) throw response.error;
+    await window.ScoreServices.invalidateAccount();
     state.remoteRoomId = null;
     state.remoteParticipants = [];
     await refreshFriends(true);
@@ -337,8 +337,8 @@
     cancelGame: cancelGame
   };
 
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("score-modules-ready", function () {
     bindEvents();
-    restoreSession();
-  });
+    restoreSession().catch(function () { window.location.replace("login.html"); });
+  }, { once: true });
 })();

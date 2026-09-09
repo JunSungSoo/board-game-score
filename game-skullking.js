@@ -37,16 +37,7 @@
   var entryDraft = null;
 
   function calcScore(round, bid, tricks, bonus) {
-    var base = 0;
-    var exact = bid === tricks;
-    if (bid === 0) {
-      base = exact ? round * 10 : round * -10;
-    } else {
-      base = exact ? tricks * 20 : Math.abs(bid - tricks) * -10;
-    }
-    // 입력한 보너스는 화면 안내대로 비드를 정확히 맞춘 경우 라운드 합계에 반영한다.
-    var appliedBonus = exact ? bonus : 0;
-    return { base: base, bonus: appliedBonus, total: base + appliedBonus, exact: exact };
+    return window.ScoreServices.calculateSkullkingScore(round, bid, tricks, bonus);
   }
 
   function renderEntry(state, listEl, ui) {
@@ -110,11 +101,9 @@
     });
     refreshSharedTrickLimit();
 
-    function enteredTricks() {
-      return state.players.reduce(function (sum, _, index) { return sum + entryDraft[index].tricks; }, 0);
+    function remainingTricks() {
+      return window.ScoreServices.remainingTricks(round, state.players.map(function (_, index) { return entryDraft[index].tricks; }));
     }
-
-    function remainingTricks() { return Math.max(0, round - enteredTricks()); }
 
     function refreshSharedTrickLimit() {
       trickSteppers.forEach(function (stepper) { stepper.refresh(); });

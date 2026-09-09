@@ -5,7 +5,6 @@
 window.ScoreManager = (function () {
   "use strict";
 
-  var STORAGE_KEY = "board-game-score-v2";
   var PRESET_NAMES = ["파비", "효명", "엘라", "동원", "주령", "서온", "유찬"];
 
   var registry = {};
@@ -61,16 +60,14 @@ window.ScoreManager = (function () {
   // ---------- 저장/복원 ----------
   function saveState() {
     try {
-      if (state) localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      else localStorage.removeItem(STORAGE_KEY);
+      if (state) window.ScoreServices.saveGame(state);
+      else window.ScoreServices.clearGame();
     } catch (err) { /* 저장 불가 환경(시크릿 모드 등)은 무시 */ }
   }
 
   function loadState() {
     try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return null;
-      var parsed = JSON.parse(raw);
+      var parsed = window.ScoreServices.loadGame();
       if (!parsed || typeof parsed.gameId !== "string" || !registry[parsed.gameId]) return null;
       if (parsed.mode !== "all" && parsed.mode !== "me") return null;
       if (!Number.isInteger(parsed.round) || parsed.round < 1) return null;
@@ -873,7 +870,7 @@ window.ScoreManager = (function () {
     // 종료된 게임은 저장소에 남기지 않는다(같은 멤버 재시작을 위해 state 자체는 메모리에 유지).
     // 저장된 채로 재접속하면 결과 화면이 아닌 라운드 입력 화면으로 복원되어
     // 마지막 라운드가 중복 기록될 수 있다.
-    try { localStorage.removeItem(STORAGE_KEY); } catch (err) { /* 저장 불가 환경은 무시 */ }
+    window.ScoreServices.clearGame();
   }
 
   function renderResult() {
@@ -1118,9 +1115,7 @@ window.ScoreManager = (function () {
     }
   }
 
-  // 모든 game-*.js는 defer로 로드되어 이 스크립트 직후, DOMContentLoaded 이전에
-  // registerGame()을 동기 호출한다. 따라서 init()을 DOMContentLoaded에 걸어두면
-  // 등록 순서와 무관하게 항상 전체 게임 목록이 갖춰진 뒤 초기화된다.
+  // Vite 진입점에서 모든 게임 모듈을 등록한 다음 계정 확인을 시작한다.
   // 계정 또는 게스트 진입이 확인된 뒤에만 게임 UI를 초기화한다.
   // 인증 확인 전 localStorage 복원 팝업이나 게임 화면이 먼저 뜨는 것을 막는다.
   if (window.AccountManager) document.addEventListener("account-access-granted", init, { once: true });
