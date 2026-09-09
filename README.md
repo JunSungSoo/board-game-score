@@ -4,21 +4,21 @@
 
 ## 개발
 
-Node.js 24와 Yarn 4.9.1을 사용합니다.
+Node.js 24와 pnpm 10.17.1을 사용합니다.
 
 ```sh
 corepack enable
-yarn install --immutable
+pnpm install --frozen-lockfile
 # .env.example을 .env.local로 복사한 뒤 공개용 Supabase 설정 입력
-yarn dev
+pnpm dev
 ```
 
 로그인: `/login.html`, 가입: `/signup.html`, 게임: `/index.html`.
 이제 HTML 파일을 직접 열거나 Python 정적 서버 대신 Vite 개발 서버를 사용합니다.
 
 ```sh
-yarn check    # TypeScript + Vitest + production build
-yarn preview  # dist 빌드 결과 확인
+pnpm check    # TypeScript + Vitest + production build
+pnpm preview  # dist 빌드 결과 확인
 ```
 
 ## 전환 상태
@@ -51,7 +51,7 @@ secret/service_role 키와 비밀번호는 넣지 않습니다. 데이터 접근
 원격: https://github.com/JunSungSoo/board-game-score.git
 
 GitHub Actions에서 타입검사, 테스트, 빌드를 실행합니다.
-Cloudflare Pages Git 연동 설정은 빌드 `yarn build`, 출력 `dist`, Node `24`입니다.
+Cloudflare Pages Git 연동 설정은 빌드 `pnpm build`, 출력 `dist`, Node `24`입니다.
 빌드 환경에도 공개용 Supabase 변수를 설정해야 합니다.
 Direct Upload로 만든 기존 Pages를 유지하려면 GitHub Actions + Wrangler로 배포할 수 있습니다.
 Cloudflare 자체 Git 연동을 쓰려면 새 Pages 프로젝트를 만들고 검증 후 사용자 도메인을 연결합니다.

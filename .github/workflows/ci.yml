@@ -12,5 +12,5 @@ jobs:
         with:
           node-version: '24'
       - run: corepack enable
-      - run: yarn install --immutable
-      - run: yarn check
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
