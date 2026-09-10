@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { requireSupabase } from './supabase';
 import { QUERY_CLIENT } from './query-client';
-import type { FriendRow, GameHistoryRow, GameState, Profile, RankingRow, RemoteParticipant } from '../data/types';
+import type { FriendRow, FriendSearchRow, GameHistoryRow, GameState, Profile, RankingRow, RemoteParticipant } from '../data/types';
 
 export function useProfileQuery(enabled: boolean) {
   return useQuery({ queryKey: ['account', 'profile'], enabled, queryFn: async (): Promise<Profile | null> => {
@@ -14,6 +14,14 @@ export function useProfileQuery(enabled: boolean) {
 export function useFriendsQuery(enabled: boolean) {
   return useQuery({ queryKey: ['account', 'friends'], enabled, refetchInterval: 30_000, queryFn: async (): Promise<FriendRow[]> => {
     const { data, error } = await requireSupabase().rpc('touch_presence');
+    if (error) throw error;
+    return data ?? [];
+  }});
+}
+
+export function useFriendSearchQuery(prefix: string, enabled: boolean) {
+  return useQuery({ queryKey: ['account', 'friend-search', prefix], enabled: enabled && Boolean(prefix), queryFn: async (): Promise<FriendSearchRow[]> => {
+    const { data, error } = await requireSupabase().rpc('search_profiles', { login_id_prefix: prefix });
     if (error) throw error;
     return data ?? [];
   }});

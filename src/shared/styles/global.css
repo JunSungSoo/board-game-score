@@ -775,6 +775,7 @@
   .friend-add-form { padding-bottom: 15px; border-bottom: 1px solid var(--line); }
   .friend-add-form label { display: block; margin-bottom: 8px; color: var(--muted); font-size: .78rem; font-weight: 600; }
   .friend-add-form > div { display: flex; align-items: stretch; gap: 8px; }
+  .friend-add-form .friend-search-input-wrap { position: relative; min-width: 0; flex: 1; }
   .friend-add-form input {
     min-width: 0;
     flex: 1;
@@ -786,6 +787,35 @@
     font-size: .95rem;
   }
   .friend-add-form input:focus { outline: none; border-color: var(--accent); box-shadow: var(--focus-ring); }
+  .friend-search-control { position: relative; }
+  .friend-search-input-wrap input { width: 100%; }
+  .friend-search-results {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
+    z-index: 6;
+  }
+  .friend-search-results button, .friend-search-results p {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    color: var(--text);
+    background: var(--card);
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    font-size: .84rem;
+    text-align: left;
+  }
+  .friend-search-results button { cursor: pointer; touch-action: manipulation; }
+  .friend-search-results button:hover, .friend-search-results button:focus-visible { background: var(--accent-soft); outline: none; }
+  .friend-search-results button:last-child, .friend-search-results p:last-child { border-bottom: 0; }
+  .friend-search-results p { color: var(--muted); text-align: center; }
   .friend-add-form .btn { flex: 0 0 auto; }
   .legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0 8px; color: var(--muted); font-size: .72rem; }
   .legend span, .presence { display: inline-flex; align-items: center; gap: 5px; }

@@ -48,6 +48,12 @@ export interface FriendRow extends Profile {
   user_id: string;
 }
 
+export interface FriendSearchRow {
+  user_id: string;
+  login_id: string;
+  display_name: string;
+}
+
 export interface GameHistoryRow {
   room_id: string;
   game_id: GameId;
