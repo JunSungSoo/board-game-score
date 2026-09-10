@@ -257,7 +257,7 @@ as $$
 begin
   if auth.uid() is null then raise exception 'not_authenticated'; end if;
   insert into public.user_presence(user_id, last_seen_at) values (auth.uid(), now())
-    on conflict (user_id) do update set last_seen_at = excluded.last_seen_at;
+    on conflict on constraint user_presence_pkey do update set last_seen_at = excluded.last_seen_at;
   return query select * from public.friend_dashboard();
 end;
 $$;
