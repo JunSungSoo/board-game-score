@@ -53,8 +53,8 @@ export function useStartGameMutation() {
   return useMutation({ mutationFn: async (game: GameState) => {
     const ENTITIES = game.teams ?? game.players ?? [];
     const PARTICIPANTS = game.teams
-      ? ENTITIES.flatMap(TEAM => (TEAM.members ?? []).map(NAME => ({ user_id: null, display_name: NAME, team_name: TEAM.name })))
-      : ENTITIES.map(PLAYER => ({ user_id: null, display_name: PLAYER.name, team_name: null }));
+      ? ENTITIES.flatMap(TEAM => (TEAM.members ?? []).map(NAME => ({ user_id: game.participantUserIds?.[NAME] ?? null, display_name: NAME, team_name: TEAM.name })))
+      : ENTITIES.map(PLAYER => ({ user_id: game.participantUserIds?.[PLAYER.name] ?? null, display_name: PLAYER.name, team_name: null }));
     const { data, error } = await requireSupabase().rpc('start_game_room', {
       requested_game_id: game.gameId,
       requested_game_mode: game.tichuMode ?? game.genericMode ?? game.mode,

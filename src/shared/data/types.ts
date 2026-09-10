@@ -25,6 +25,7 @@ export interface GameState {
   scoreUnitSource?: 'preset' | 'custom';
   remoteRoomId?: number | string | null;
   remoteParticipants?: RemoteParticipant[];
+  participantUserIds?: Record<string, string>;
 }
 
 export interface RemoteParticipant {

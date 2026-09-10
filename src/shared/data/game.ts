@@ -1,7 +1,6 @@
 export const GAME_STORAGE_KEY = 'board-game-score-v2';
 export const GUEST_SESSION_KEY = 'board-game-guest-session-v1';
 export const AUTH_DOMAIN = import.meta.env.VITE_AUTH_DOMAIN || 'danbi-score.pages.dev';
-export const PRESET_PLAYER_NAMES = ['파비', '효명', '엘라', '동원', '주령', '서온', '유찬'] as const;
 export const SKULL_KING_TOTAL_ROUNDS = 10;
 export const SKULL_KING_MAX_PLAYERS = 8;
 export const SKULL_KING_BONUS_STEP = 10;

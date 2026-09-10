@@ -233,6 +233,7 @@
     font-size: 1rem;
   }
   .guest-row input { flex: 1; }
+  .participant-search-row input { min-width: 0; width: 100%; }
   .guest-row input:focus, .extra-bonus-input:focus, select.call-select:focus {
     outline: none;
     border-color: var(--accent);
@@ -267,6 +268,51 @@
   .hint { color: var(--muted); font-size: 0.82rem; margin-top: 10px; line-height: 1.5; }
   .error { color: var(--negative); font-size: 0.85rem; margin-top: 10px; display: none; }
   .error.show { display: block; }
+  .friend-suggestions {
+    overflow: hidden;
+    margin-top: 10px;
+    background: var(--card-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  .friend-suggestions-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    color: var(--text);
+    border-bottom: 1px solid var(--line);
+    font-size: .82rem;
+  }
+  .friend-suggestions-title span { flex: 0 0 auto; color: var(--muted); font-size: .7rem; font-weight: 500; }
+  .friend-suggestions-empty { padding: 18px 12px; color: var(--muted); font-size: .8rem; text-align: center; }
+  .friend-suggestion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 58px;
+    padding: 10px 12px;
+    color: var(--text);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .friend-suggestion:last-child { border-bottom: 0; }
+  .friend-suggestion:hover { background: var(--accent-soft); }
+  .friend-suggestion:focus-visible { position: relative; outline: none; box-shadow: inset var(--focus-ring); }
+  .friend-suggestion > span:first-child { min-width: 0; }
+  .friend-suggestion strong, .friend-suggestion small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .friend-suggestion strong { font-size: .9rem; }
+  .friend-suggestion small { margin-top: 3px; color: var(--muted); font-size: .72rem; }
+  .guest-add-button { margin-top: 10px !important; font-size: .88rem; }
+  .guest-add-button:disabled { cursor: not-allowed; opacity: .55; }
   .top-row { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 8px; }
   .round-badge { font-size: 1.1rem; font-weight: 700; }
   .round-badge span { color: var(--accent-deep); }
