@@ -40,8 +40,8 @@ pnpm preview  # dist 빌드 결과 확인
 `.env.local`과 Cloudflare 빌드 환경에 `.env.example`의 변수를 설정합니다.
 `VITE_` 변수는 브라우저 번들에 공개되므로 publishable 키만 사용합니다.
 secret/service_role 키와 비밀번호는 넣지 않습니다. 데이터 접근 권한은 RLS가 담당합니다.
-서비스 주소는 `danbi-score.pages.dev`입니다. 내부 인증 도메인은 공개 접속 주소와 별개로
-`danbi.playground.com`을 유지하며 DB의 `handle_new_user` 검증식과 일치해야 합니다.
+서비스 주소와 내부 인증 도메인은 모두 `danbi-score.pages.dev`입니다.
+`VITE_AUTH_DOMAIN`은 DB의 `handle_new_user` 검증식과 일치해야 합니다.
 도메인 변경 SQL의 원격 적용 여부는 별도 확인이 필요합니다.
 가상 이메일 방식은 이메일 확인 기능이 꺼져 있어야 합니다.
 기존 도메인으로 생성된 계정이 있다면 별도의 계정 식별자 이전이 필요합니다.

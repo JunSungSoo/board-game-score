@@ -15,7 +15,7 @@ begin
   if requested_name is null or char_length(requested_name) not between 1 and 20 then
     raise exception 'invalid_display_name';
   end if;
-  if lower(coalesce(new.email, '')) <> (requested_id || '@danbi.playground.com') then
+  if lower(coalesce(new.email, '')) <> (requested_id || '@danbi-score.pages.dev') then
     raise exception 'invalid_internal_identity';
   end if;
 
