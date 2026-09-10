@@ -13,8 +13,7 @@ export const GAME_NAME_BY_ID = { skullking: '스컬킹', tichu: '티츄', generi
 
 export const GAME_OPTIONS = [
   { id: 'skullking', label: '스컬킹', description: '트릭 예측 게임 · 2~8명' },
-  { id: 'tichu-team', label: '티츄 · 팀전', description: '팀 대항 · 1000점 선착' },
-  { id: 'tichu-zheng', label: '티츄 · 쟁상유', description: '개인전 · 11점 선착' },
+  { id: 'tichu', label: '티츄', description: '팀전 또는 쟁상유' },
   { id: 'generic', label: '기타 스코어', description: '특정 규칙 없이 팀 또는 내 점수 기록' },
 ] as const;
 

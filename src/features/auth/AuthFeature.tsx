@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { errorMessage, normalizeId } from './api/auth';
 import { useCheckIdMutation, useGuestMutation, useSignInMutation, useSignUpMutation } from './api/hooks';
 import { QUERY_CLIENT } from '../../shared/api/query-client';
+import { APP_ROUTES } from '../../shared/data/routes';
 
 export function AuthFeature({ signup = false }: { signup?: boolean }) {
   const NAVIGATE = useNavigate();
@@ -24,7 +25,7 @@ export function AuthFeature({ signup = false }: { signup?: boolean }) {
     if (signup && VERIFIED_ID !== normalizeId(ID)) return;
     const ON_SUCCESS = async () => {
         await QUERY_CLIENT.invalidateQueries({ queryKey: ['auth'] });
-        NAVIGATE(signup ? '/login?joined=1' : '/', { replace: true });
+        NAVIGATE(signup ? '/login?joined=1' : APP_ROUTES.FRIENDS, { replace: true });
     };
     if (signup) SIGN_UP.mutate({ id: ID, name: NAME, password: PASSWORD }, { onSuccess: ON_SUCCESS });
     else SIGN_IN.mutate({ id: ID, password: PASSWORD }, { onSuccess: ON_SUCCESS });
@@ -49,7 +50,7 @@ export function AuthFeature({ signup = false }: { signup?: boolean }) {
       </form>
       <p className={`account-feedback ${ERROR || SEARCH_PARAMS.get('joined') ? 'show' : ''}`}>{ERROR || (SEARCH_PARAMS.get('joined') ? '회원가입이 완료됐어요. 로그인해주세요.' : '')}</p>
       <p className="account-note">아이디·비밀번호 찾기는 제공하지 않아요.</p>
-      {!signup && <><div className="auth-divider"><span>또는</span></div><button className="btn ghost block" onClick={() => GUEST.mutate(undefined, { onSuccess: async () => { await QUERY_CLIENT.invalidateQueries({ queryKey: ['auth'] }); NAVIGATE('/', { replace: true }); } })}>게스트로 이용하기</button></>}
+      {!signup && <><div className="auth-divider"><span>또는</span></div><button className="btn ghost block" onClick={() => GUEST.mutate(undefined, { onSuccess: async () => { await QUERY_CLIENT.invalidateQueries({ queryKey: ['auth'] }); NAVIGATE(APP_ROUTES.FRIENDS, { replace: true }); } })}>게스트로 이용하기</button></>}
       <div className="auth-page-switch">{signup ? '이미 계정이 있나요? ' : '계정이 없나요? '}<Link to={signup ? '/login' : '/signup'}>{signup ? '로그인' : '회원가입'}</Link></div>
     </section>
   </main>;
