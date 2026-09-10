@@ -794,7 +794,11 @@
     top: calc(100% + 5px);
     left: 0;
     right: 0;
+    max-height: 242px;
     overflow: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: 9px;

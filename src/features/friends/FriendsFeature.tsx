@@ -20,7 +20,7 @@ export function FriendsFeature({ profile }: { profile: Profile | null }) {
   }
   if (!profile) return <section className="card account-page-card"><p className="empty-state">게스트 이용 중에는 친구 상태를 불러올 수 없어요.<br/>계정으로 로그인하면 친구의 온라인 상태와 게임 참여 여부를 확인할 수 있습니다.</p></section>;
   return <section className="card account-page-card">
-    <form className="friend-add-form" onSubmit={addFriend}><label htmlFor="friend-login-id">친구 아이디</label><div className="friend-search-control"><div className="friend-search-input-wrap"><input id="friend-login-id" autoComplete="off" value={LOGIN_ID} onChange={EVENT => SET_LOGIN_ID(EVENT.target.value)} placeholder="아이디 입력"/>
+    <form className="friend-add-form" onSubmit={addFriend}><label htmlFor="friend-login-id">친구 아이디 또는 이름</label><div className="friend-search-control"><div className="friend-search-input-wrap"><input id="friend-login-id" autoComplete="off" value={LOGIN_ID} onChange={EVENT => SET_LOGIN_ID(EVENT.target.value)} placeholder="아이디 또는 이름 입력"/>
       {LOGIN_ID.trim() && <div className="friend-search-results" role="listbox" aria-label="친구 검색 결과">
         {SEARCH.isFetching && <p>검색 중…</p>}
         {!SEARCH.isFetching && SEARCH.error && <p>검색 결과를 불러오지 못했어요.</p>}
