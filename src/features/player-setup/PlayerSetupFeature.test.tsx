@@ -39,4 +39,15 @@ describe('participant friend suggestions', () => {
 
     expect(ON_START).toHaveBeenCalledWith(expect.objectContaining({ names: ['온라인 친구'], participantUserIds: { '온라인 친구': 'one' } }));
   });
+
+  it('adds the signed-in user and user id when self participation is checked', async () => {
+    const ON_START = vi.fn();
+    vi.mocked(useFriendsQuery).mockReturnValue({ data: FRIENDS, isLoading: false } as ReturnType<typeof useFriendsQuery>);
+    render(<PlayerSetupFeature profile={PROFILE} guestOnly={false} allowSelf team={false} min={1} max={8} onStart={ON_START} onBack={vi.fn()} />);
+
+    await userEvent.click(screen.getByRole('checkbox', { name: '나(나)도 참여' }));
+    await userEvent.click(screen.getByRole('button', { name: '게임 시작' }));
+
+    expect(ON_START).toHaveBeenCalledWith(expect.objectContaining({ names: ['나'], participantUserIds: { '나': 'me' } }));
+  });
 });

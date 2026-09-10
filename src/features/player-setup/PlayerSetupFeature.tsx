@@ -4,19 +4,20 @@ import type { FriendRow, Profile } from '../../shared/data/types';
 
 export interface SetupResult { names: string[]; membersA: string[]; membersB: string[]; participantUserIds: Record<string, string>; }
 
-export function PlayerSetupFeature({ profile, guestOnly, team, min, max, onStart, onBack }: {
+export function PlayerSetupFeature({ profile, guestOnly, allowSelf = false, team, min, max, onStart, onBack }: {
   profile: Profile | null;
-  guestOnly: boolean; team: boolean; min: number; max: number;
+  guestOnly: boolean; allowSelf?: boolean; team: boolean; min: number; max: number;
   onStart: (result: SetupResult) => void; onBack: () => void;
 }) {
   const FRIENDS = useFriendsQuery(Boolean(profile) && !guestOnly);
+  const [SELF_INCLUDED, SET_SELF_INCLUDED] = useState(false);
   const [SELECTED_FRIENDS, SET_SELECTED_FRIENDS] = useState<FriendRow[]>([]);
   const [GUESTS, SET_GUESTS] = useState<string[]>([]);
   const [INPUT, SET_INPUT] = useState('');
   const [TEAM_A, SET_TEAM_A] = useState<string[]>([]);
   const [ERROR, SET_ERROR] = useState('');
   const ACCEPTED_FRIENDS = useMemo(() => (FRIENDS.data ?? []).filter(FRIEND => FRIEND.relationship === 'accepted'), [FRIENDS.data]);
-  const NAMES = useMemo(() => [...SELECTED_FRIENDS.map(FRIEND => FRIEND.display_name), ...GUESTS], [SELECTED_FRIENDS, GUESTS]);
+  const NAMES = useMemo(() => [...(SELF_INCLUDED && profile ? [profile.display_name] : []), ...SELECTED_FRIENDS.map(FRIEND => FRIEND.display_name), ...GUESTS], [GUESTS, profile, SELECTED_FRIENDS, SELF_INCLUDED]);
   const MEMBERS_A = NAMES.filter(NAME => TEAM_A.includes(NAME));
   const MEMBERS_B = NAMES.filter(NAME => !TEAM_A.includes(NAME));
   const VISIBLE_FRIENDS = useMemo(() => {
@@ -53,15 +54,31 @@ export function PlayerSetupFeature({ profile, guestOnly, team, min, max, onStart
     SET_TEAM_A(CURRENT => CURRENT.filter(ITEM => ITEM !== friend.display_name));
   }
 
+  function toggleSelf() {
+    if (!profile) return;
+    if (SELF_INCLUDED) {
+      SET_SELF_INCLUDED(false);
+      SET_TEAM_A(CURRENT => CURRENT.filter(NAME => NAME !== profile.display_name));
+      return;
+    }
+    if (NAMES.includes(profile.display_name)) { SET_ERROR('동일한 이름의 참가자가 이미 있어요.'); return; }
+    if (NAMES.length >= max) { SET_ERROR(`최대 ${max}명까지 참가할 수 있어요.`); return; }
+    SET_SELF_INCLUDED(true);
+    if (MEMBERS_A.length <= MEMBERS_B.length) SET_TEAM_A(CURRENT => [...CURRENT, profile.display_name]);
+    SET_ERROR('');
+  }
+
   function start() {
     if (NAMES.length < min || NAMES.length > max) { SET_ERROR(`${min}~${max}명의 참가자가 필요해요.`); return; }
     if (team && (!MEMBERS_A.length || !MEMBERS_B.length)) { SET_ERROR('각 팀에 최소 1명씩 있어야 해요.'); return; }
-    onStart({ names: NAMES, membersA: MEMBERS_A, membersB: MEMBERS_B, participantUserIds: Object.fromEntries(SELECTED_FRIENDS.map(FRIEND => [FRIEND.display_name, FRIEND.user_id])) });
+    onStart({ names: NAMES, membersA: MEMBERS_A, membersB: MEMBERS_B, participantUserIds: Object.fromEntries([...(SELF_INCLUDED && profile ? [[profile.display_name, profile.id] as const] : []), ...SELECTED_FRIENDS.map(FRIEND => [FRIEND.display_name, FRIEND.user_id] as const)]) });
   }
 
   return <section className="screen active">
     <div className="card"><h2>{guestOnly ? '참가 인원 등록' : '참가 인원 선택'}</h2>
+      {allowSelf && profile && <label className="custom-check-row participant-self-check"><input type="checkbox" checked={SELF_INCLUDED} onChange={toggleSelf}/><span>나({profile.display_name})도 참여</span></label>}
       <div className="chip-list">
+        {SELF_INCLUDED && profile && <button className="chip selected" onClick={toggleSelf}>★ {profile.display_name} (나) ✕</button>}
         {SELECTED_FRIENDS.map(FRIEND => <button key={FRIEND.user_id} className="chip selected" onClick={() => removeFriend(FRIEND)}>● {FRIEND.display_name} ✕</button>)}
         {GUESTS.map(NAME => <button key={NAME} className="chip selected" onClick={() => { SET_GUESTS(CURRENT => CURRENT.filter(ITEM => ITEM !== NAME)); SET_TEAM_A(CURRENT => CURRENT.filter(ITEM => ITEM !== NAME)); }}>👤 {NAME} ✕</button>)}
       </div>

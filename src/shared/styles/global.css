@@ -334,6 +334,14 @@
     font-weight: 600;
     cursor: pointer;
   }
+  .participant-self-check {
+    margin: 2px 0 12px;
+    padding: 11px 12px;
+    background: var(--card-soft);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+  }
+  .participant-self-check input { width: 18px; height: 18px; accent-color: var(--accent); }
   .custom-check-row input {
     width: 19px;
     height: 19px;
