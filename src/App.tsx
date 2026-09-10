@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { useAuthSession } from './features/auth/api/hooks';
 import { useScreenRipple } from './shared/hooks/useScreenRipple';
+import { useRouteScrollTop } from './shared/hooks/useRouteScrollTop';
 import { APP_ROUTES } from './shared/data/routes';
 
 const LOGIN_PAGE = lazy(() => import('./pages/login/LoginPage').then(MODULE => ({ default: MODULE.LoginPage })));
@@ -20,6 +21,7 @@ function ProtectedRoute() {
 
 export default function App() {
   useScreenRipple();
+  useRouteScrollTop();
   return <Suspense fallback={<main className="auth-page-shell"><p>화면을 준비하고 있어요…</p></main>}><Routes>
     <Route element={<ProtectedRoute />}>
       <Route path={APP_ROUTES.FRIENDS} element={<HOME_PAGE />} />
