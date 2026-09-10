@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { requireSupabase } from './supabase';
 import { QUERY_CLIENT } from './query-client';
-import type { FriendRow, FriendSearchRow, GameHistoryRow, GameState, Profile, RankingRow, RemoteParticipant } from '../data/types';
+import type { FriendRow, FriendSearchRow, GameHistoryParticipantRow, GameHistoryRow, GameState, Profile, RankingRow, RemoteParticipant } from '../data/types';
 
 export function useProfileQuery(enabled: boolean) {
   return useQuery({ queryKey: ['account', 'profile'], enabled, queryFn: async (): Promise<Profile | null> => {
@@ -30,6 +30,14 @@ export function useFriendSearchQuery(prefix: string, enabled: boolean) {
 export function useHistoryQuery(enabled: boolean) {
   return useQuery({ queryKey: ['account', 'history'], enabled, queryFn: async (): Promise<GameHistoryRow[]> => {
     const { data, error } = await requireSupabase().rpc('my_game_history');
+    if (error) throw error;
+    return data ?? [];
+  }});
+}
+
+export function useGameHistoryDetailQuery(roomId: string | null, enabled: boolean) {
+  return useQuery({ queryKey: ['account', 'history', roomId], enabled: enabled && Boolean(roomId), queryFn: async (): Promise<GameHistoryParticipantRow[]> => {
+    const { data, error } = await requireSupabase().rpc('game_history_detail', { requested_room_id: roomId });
     if (error) throw error;
     return data ?? [];
   }});

@@ -852,6 +852,19 @@
   .ranking-number { flex: 0 0 30px; color: var(--accent-deep); font-size: 1rem; font-weight: 800; text-align: center; }
   .ranking-position-1 { padding: 16px 10px; background: #FFFBEA; border-radius: 10px; }
   .ranking-position-1 .ranking-number { color: #B7791F; font-size: 1.25rem; }
+  .history-score-area > div { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+  .history-score-area .btn { flex: 0 0 auto; }
+  .history-detail-box { width: min(92vw, 520px); max-height: 82vh; overflow-y: auto; text-align: left; }
+  .history-detail-box .modal-title-row small { display: block; margin-top: 4px; color: var(--muted); font-size: .72rem; }
+  .history-detail-list { border-top: 1px solid var(--line); }
+  .history-detail-row { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 58px; padding: 10px 2px; border-bottom: 1px solid var(--line); }
+  .history-detail-row > div { min-width: 0; }
+  .history-detail-row strong, .history-detail-row small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .history-detail-row small { margin-top: 3px; color: var(--muted); font-size: .72rem; }
+  .history-detail-rank { color: var(--accent-deep); font-size: .82rem; font-weight: 800; }
+  .history-detail-row.rank-1 { background: #FFFBEA; }
+  .ranking-record b, .ranking-record span { display: block; }
+  .ranking-record span { margin-top: 3px; color: var(--muted); font-size: .75rem; }
   .empty-state { padding: 26px 8px; color: var(--muted); font-size: .82rem; font-weight: 400 !important; text-align: center; }
   .edit-rounds-box {
     max-width: min(92vw, 640px);

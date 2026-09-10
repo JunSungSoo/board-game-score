@@ -66,6 +66,14 @@ export interface GameHistoryRow {
   final_rank: number;
 }
 
+export interface GameHistoryParticipantRow {
+  participant_id: number;
+  display_name: string;
+  team_name: string | null;
+  final_score: number;
+  final_rank: number;
+}
+
 export interface RankingRow {
   user_id: string;
   login_id: string;

@@ -369,6 +369,26 @@ as $$
   order by gr.ended_at desc;
 $$;
 
+create or replace function public.game_history_detail(requested_room_id uuid)
+returns table(participant_id bigint, display_name text, team_name text, final_score integer, final_rank integer)
+language sql
+security definer set search_path = ''
+as $$
+  select gp.id, gp.display_name, gp.team_name, gp.final_score, gp.final_rank
+  from public.game_participants gp
+  join public.game_rooms gr on gr.id = gp.room_id
+  where gp.room_id = requested_room_id
+    and gr.status = 'completed'
+    and (
+      gr.host_user_id = auth.uid()
+      or exists (
+        select 1 from public.game_participants mine
+        where mine.room_id = requested_room_id and mine.user_id = auth.uid()
+      )
+    )
+  order by gp.final_rank, gp.final_score desc, gp.display_name;
+$$;
+
 create or replace function public.win_rankings()
 returns table(user_id uuid, login_id text, display_name text, wins bigint, games bigint)
 language sql
@@ -419,6 +439,8 @@ revoke all on function public.cancel_game_room(uuid) from public;
 grant execute on function public.cancel_game_room(uuid) to authenticated;
 revoke all on function public.my_game_history() from public;
 grant execute on function public.my_game_history() to authenticated;
+revoke all on function public.game_history_detail(uuid) from public;
+grant execute on function public.game_history_detail(uuid) to authenticated;
 revoke all on function public.win_rankings() from public;
 grant execute on function public.win_rankings() to authenticated;
 revoke all on function public.cleanup_expired_game_rooms() from public;
