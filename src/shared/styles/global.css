@@ -150,6 +150,7 @@
     touch-action: manipulation;
   }
   .side-menu-item:hover:not(:disabled) { border-color: var(--accent); }
+  .side-menu-item.current { color: var(--accent-deep); background: var(--accent-soft); border-color: var(--accent); }
   .side-menu-item:focus-visible { outline: none; box-shadow: var(--focus-ring); }
   .side-menu-item:disabled { color: var(--muted); cursor: not-allowed; opacity: .6; }
   header { text-align: center; padding: 24px 0 8px; position: relative; }
@@ -695,6 +696,51 @@
   .account-profile strong, .account-profile span { display: block; }
   .account-profile strong { font-size: 1.1rem; }
   .account-profile span { margin-top: 5px; color: var(--muted); font-size: .82rem; }
+  .account-page-container { padding-top: max(20px, env(safe-area-inset-top)); }
+  .account-page-header { padding-top: 16px; }
+  .game-record-cta {
+    min-height: 56px;
+    margin-top: 16px;
+    font-size: 1.05rem;
+  }
+  .account-route-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 5px;
+    margin-top: 16px;
+    background: var(--secondary-btn);
+    border: 1px solid var(--secondary-btn-hover);
+    border-radius: 12px;
+  }
+  .account-route-nav a {
+    min-width: 0;
+    padding: 10px 6px;
+    color: #5F584A;
+    border-radius: 8px;
+    font-size: .84rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+  }
+  .account-route-nav a.active { color: var(--accent-deep); background: var(--card); box-shadow: var(--shadow); }
+  .account-route-nav a:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .account-page-card { margin-top: 12px; }
+  .friend-add-form { padding-bottom: 15px; border-bottom: 1px solid var(--line); }
+  .friend-add-form label { display: block; margin-bottom: 8px; color: var(--muted); font-size: .78rem; font-weight: 600; }
+  .friend-add-form > div { display: flex; align-items: stretch; gap: 8px; }
+  .friend-add-form input {
+    min-width: 0;
+    flex: 1;
+    padding: 11px 12px;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: .95rem;
+  }
+  .friend-add-form input:focus { outline: none; border-color: var(--accent); box-shadow: var(--focus-ring); }
+  .friend-add-form .btn { flex: 0 0 auto; }
   .legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0 8px; color: var(--muted); font-size: .72rem; }
   .legend span, .presence { display: inline-flex; align-items: center; gap: 5px; }
   .legend i, .presence i { width: 9px; height: 9px; border-radius: 50%; background: #A0AEC0; }
@@ -702,6 +748,7 @@
   .legend i.offline, .presence.offline i { background: #A0AEC0; }
   .legend i.playing, .presence.playing i { background: #E53E3E; }
   .account-list { margin-top: 8px; border-top: 1px solid var(--line); }
+  .account-list.standalone { margin-top: 0; border-top: 0; }
   .friend-row, .history-row, .ranking-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 62px; padding: 11px 2px; border-bottom: 1px solid var(--line); }
   .friend-row > div:first-child, .history-row > div:first-child, .ranking-row > div:nth-child(2) { min-width: 0; }
   .friend-row strong, .friend-row small, .history-row strong, .history-row small, .ranking-row strong, .ranking-row small { display: block; }
@@ -715,6 +762,8 @@
   .history-row > div:last-child b { color: var(--accent-deep); }
   .history-row > div:last-child span { margin-top: 3px; color: var(--muted); font-size: .75rem; }
   .ranking-number { flex: 0 0 30px; color: var(--accent-deep); font-size: 1rem; font-weight: 800; text-align: center; }
+  .ranking-position-1 { padding: 16px 10px; background: #FFFBEA; border-radius: 10px; }
+  .ranking-position-1 .ranking-number { color: #B7791F; font-size: 1.25rem; }
   .empty-state { padding: 26px 8px; color: var(--muted); font-size: .82rem; font-weight: 400 !important; text-align: center; }
   .edit-rounds-box {
     max-width: min(92vw, 640px);

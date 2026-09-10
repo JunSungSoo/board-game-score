@@ -47,3 +47,22 @@ export interface FriendRow extends Profile {
   user_id: string;
 }
 
+export interface GameHistoryRow {
+  room_id: string;
+  game_id: GameId;
+  game_mode: string;
+  started_at: string;
+  ended_at: string;
+  display_name: string;
+  team_name: string | null;
+  final_score: number;
+  final_rank: number;
+}
+
+export interface RankingRow {
+  user_id: string;
+  login_id: string;
+  display_name: string;
+  wins: number;
+  games: number;
+}

@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { requireSupabase } from './supabase';
 import { QUERY_CLIENT } from './query-client';
-import type { GameState, Profile, RemoteParticipant } from '../data/types';
+import type { FriendRow, GameHistoryRow, GameState, Profile, RankingRow, RemoteParticipant } from '../data/types';
 
 export function useProfileQuery(enabled: boolean) {
   return useQuery({ queryKey: ['account', 'profile'], enabled, queryFn: async (): Promise<Profile | null> => {
@@ -12,7 +12,7 @@ export function useProfileQuery(enabled: boolean) {
 }
 
 export function useFriendsQuery(enabled: boolean) {
-  return useQuery({ queryKey: ['account', 'friends'], enabled, refetchInterval: 30_000, queryFn: async () => {
+  return useQuery({ queryKey: ['account', 'friends'], enabled, refetchInterval: 30_000, queryFn: async (): Promise<FriendRow[]> => {
     const { data, error } = await requireSupabase().rpc('touch_presence');
     if (error) throw error;
     return data ?? [];
@@ -20,7 +20,7 @@ export function useFriendsQuery(enabled: boolean) {
 }
 
 export function useHistoryQuery(enabled: boolean) {
-  return useQuery({ queryKey: ['account', 'history'], enabled, queryFn: async () => {
+  return useQuery({ queryKey: ['account', 'history'], enabled, queryFn: async (): Promise<GameHistoryRow[]> => {
     const { data, error } = await requireSupabase().rpc('my_game_history');
     if (error) throw error;
     return data ?? [];
@@ -28,7 +28,7 @@ export function useHistoryQuery(enabled: boolean) {
 }
 
 export function useRankingsQuery(enabled: boolean) {
-  return useQuery({ queryKey: ['account', 'rankings'], enabled, queryFn: async () => {
+  return useQuery({ queryKey: ['account', 'rankings'], enabled, queryFn: async (): Promise<RankingRow[]> => {
     const { data, error } = await requireSupabase().rpc('win_rankings');
     if (error) throw error;
     return data ?? [];
@@ -38,6 +38,13 @@ export function useRankingsQuery(enabled: boolean) {
 export function useFriendMutation() {
   return useMutation({ mutationFn: async (loginId: string) => {
     const { error } = await requireSupabase().rpc('send_friend_request', { target_login_id: loginId });
+    if (error) throw error;
+  }, onSuccess: () => QUERY_CLIENT.invalidateQueries({ queryKey: ['account', 'friends'] }) });
+}
+
+export function useFriendResponseMutation() {
+  return useMutation({ mutationFn: async ({ friendshipId, accept }: { friendshipId: number; accept: boolean }) => {
+    const { error } = await requireSupabase().rpc('respond_friend_request', { request_id: friendshipId, accept_request: accept });
     if (error) throw error;
   }, onSuccess: () => QUERY_CLIENT.invalidateQueries({ queryKey: ['account', 'friends'] }) });
 }

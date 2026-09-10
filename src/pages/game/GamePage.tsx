@@ -42,7 +42,7 @@ export function GamePage() {
   function finish() { if (!GAME) return; if (GAME.remoteRoomId) FINISH_REMOTE.mutate({ game: GAME, cancel: false }); SET_STAGE('result'); }
   function restart() { if (!GAME) return; const RESET = entitiesOf(GAME).map(ENTITY => ({ ...ENTITY, total: 0, rounds: [] })); SET_GAME({ ...GAME, round: 1, roundLabels: GAME.gameId === 'skullking' ? [] : undefined, ...(GAME.teams ? { teams: RESET } : { players: RESET }), remoteRoomId: null, remoteParticipants: [] }); SET_STAGE('score'); }
   const BACKGROUND_GAME = GAME?.gameId ?? (CHOICE.startsWith('tichu') ? 'tichu' : CHOICE === 'skullking' ? 'skullking' : null);
-  return <><div className="game-bg" data-active={BACKGROUND_GAME ?? undefined}/><AccountMenuFeature profile={PROFILE} guest={GUEST} onGameSelect={() => { CLEAR_GAME(); SET_STAGE('select'); }} />
+  return <><div className="game-bg" data-active={BACKGROUND_GAME ?? undefined}/><AccountMenuFeature profile={PROFILE} guest={GUEST} />
     <div className="container"><header><button className={`account-status ${PROFILE ? 'signed-in' : ''}`}>{PROFILE?.display_name ?? '게스트'}</button><h1>🎲 보드게임 점수 계산기</h1><p>보드게임 점수를 쉽고 정확하게</p></header>
       {STAGE === 'select' && <GameSelectFeature onSelect={selectGame} />}
       {STAGE === 'mode' && <ModeSelectFeature generic={CHOICE === 'generic'} onSelect={chooseMode} onBack={() => SET_STAGE('select')} />}

@@ -10,6 +10,7 @@ export const TICHU_TEAM_TARGET = 1000;
 export const TICHU_ZHENG_TARGET = 11;
 export const GENERIC_SCORE_UNITS = [1, 5, 10, 50] as const;
 export const MAX_GENERIC_SCORE_UNIT = 1_000_000;
+export const GAME_NAME_BY_ID = { skullking: '스컬킹', tichu: '티츄', generic: '기타 스코어' } as const;
 
 export const GAME_OPTIONS = [
   { id: 'skullking', label: '스컬킹', description: '트릭 예측 게임 · 2~8명' },
