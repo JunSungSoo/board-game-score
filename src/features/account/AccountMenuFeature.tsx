@@ -18,10 +18,11 @@ export function AccountMenuFeature({ profile, guest }: { profile: Profile | null
       <button className={`side-menu-item ${LOCATION.pathname === APP_ROUTES.FRIENDS ? 'current' : ''}`} onClick={() => GO(APP_ROUTES.FRIENDS)}>친구 목록</button>
       <button className={`side-menu-item ${LOCATION.pathname === APP_ROUTES.GAME_HISTORY ? 'current' : ''}`} onClick={() => GO(APP_ROUTES.GAME_HISTORY)}>게임 기록</button>
       <button className={`side-menu-item ${LOCATION.pathname === APP_ROUTES.RANK ? 'current' : ''}`} onClick={() => GO(APP_ROUTES.RANK)}>랭킹</button>
-      <div className="side-menu-divider"/><button className={`side-menu-item ${LOCATION.pathname.startsWith('/game/') ? 'current' : ''}`} onClick={() => GO(APP_ROUTES.GAME_SELECT)}>게임 점수 기록</button>
+      <div className="side-menu-divider"/><button className={`side-menu-item ${LOCATION.pathname.startsWith('/game/') ? 'current' : ''}`} onClick={() => GO(APP_ROUTES.GAME_SELECT)}>게임선택</button>
+      <button className="side-menu-logout" onClick={logout}>{guest ? '게스트 종료' : '로그아웃'}</button>
     </nav>
     {ACCOUNT_OPEN && <div className="modal-overlay show"><div className="modal-box account-box"><div className="modal-title-row"><h2>내 계정</h2><button className="modal-close" onClick={() => SET_ACCOUNT_OPEN(false)}>×</button></div>
-      <div className="account-profile"><strong>{profile?.display_name ?? '게스트'}</strong><span>{profile ? `@${profile.login_id}` : '이 브라우저에만 기록됩니다.'}</span></div><button className="btn ghost block" onClick={logout}>{guest ? '게스트 종료' : '로그아웃'}</button>
+      <div className="account-profile"><strong>{profile?.display_name ?? '게스트'}</strong><span>{profile ? `@${profile.login_id}` : '이 브라우저에만 기록됩니다.'}</span></div>
     </div></div>}
   </>;
 }
