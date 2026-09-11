@@ -198,7 +198,15 @@
     cursor: pointer;
     transition: border-color .15s, box-shadow .15s, transform .1s;
   }
-  .mode-btn small { display: block; font-weight: 400; color: var(--muted); font-size: 0.8rem; margin-top: 8px; }
+  .mode-btn small {
+    display: block;
+    font-weight: 400;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 8px;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
   .mode-btn:hover { border-color: var(--accent); }
   .mode-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
   .mode-btn:active { transform: scale(0.98); }
