@@ -13,6 +13,7 @@ import { useFinishGameMutation, useStartGameMutation } from '../../shared/api/ac
 import { SUPABASE_CLIENT } from '../../shared/api/supabase';
 import { APP_ROUTES, GAME_MODE_ROUTES } from '../../shared/data/routes';
 import type { GameMode, GameState, ScoreEntity } from '../../shared/data/types';
+import { LoadingScreen } from '../../shared/ui/LoadingScreen';
 import { GAME_STORE, entitiesOf } from '../../stores/game-store';
 
 type SetupChoice = 'skullking' | 'tichu-team' | 'tichu-zheng' | 'generic';
@@ -26,7 +27,7 @@ function SingleModeLauncher({ onStart }: { onStart: () => void }) {
     STARTED.current = true;
     onStart();
   }, [onStart]);
-  return <section className="screen active"><div className="card"><p className="empty-state">내 점수 기록을 준비하고 있어요…</p></div></section>;
+  return <LoadingScreen />;
 }
 
 export function GamePage() {

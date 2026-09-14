@@ -61,6 +61,44 @@
   body.auth-checking > * { visibility: hidden; }
   /* 게임 선택 이후에도 최초 게임 선택 화면과 동일한 아이보리 배경을 유지한다. */
   body[data-game] { background: var(--bg); }
+  .loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    display: grid;
+    place-items: center;
+    min-height: 100dvh;
+    padding: 24px;
+    background: var(--bg);
+  }
+  .loading-label {
+    display: inline-flex;
+    align-items: baseline;
+    color: var(--accent-deep);
+    font-size: clamp(1.15rem, 4.5vw, 1.45rem);
+    font-weight: 700;
+    letter-spacing: .02em;
+  }
+  .loading-dots {
+    display: inline-block;
+    width: 2.5em;
+    text-align: left;
+  }
+  .loading-dots::after {
+    content: ".";
+    animation: loading-dots 2s steps(1, end) infinite;
+  }
+  @keyframes loading-dots {
+    0%, 19.999% { content: "."; }
+    20%, 39.999% { content: ".."; }
+    40%, 59.999% { content: "..."; }
+    60%, 79.999% { content: "...."; }
+    80%, 99.999% { content: "....."; }
+    100% { content: "."; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .loading-dots::after { animation-duration: 5s; }
+  }
   .container { max-width: 640px; margin: 0 auto; padding: 20px 16px 60px; position: relative; z-index: 1; }
   /* 게임별 캐릭터 배경 워터마크. 뷰포트에 고정되어 스크롤해도 흔들리지 않는다. */
   .game-bg {
