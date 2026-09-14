@@ -6,7 +6,7 @@ import { Stepper } from './Stepper';
 
 export function TichuEntry({ game, onSubmit }: { game: GameState; onSubmit: (scores: number[]) => void }) {
   if (game.tichuMode === 'team') return <TeamEntry game={game} onSubmit={onSubmit} />;
-  return <ZhengEntry game={game} onSubmit={onSubmit} />;
+  return <ZhengEntry onSubmit={onSubmit} />;
 }
 
 function TeamEntry({ game, onSubmit }: { game: GameState; onSubmit: (scores: number[]) => void }) {
@@ -22,9 +22,9 @@ function TeamEntry({ game, onSubmit }: { game: GameState; onSubmit: (scores: num
     <p className="preview">이번 라운드: 팀 A <b>{SCORE.a}점</b> · 팀 B <b>{SCORE.b}점</b></p></div><button className="btn block" onClick={() => onSubmit([SCORE.a, SCORE.b])}>라운드 점수 계산</button></>;
 }
 
-function ZhengEntry({ game, onSubmit }: { game: GameState; onSubmit: (scores: number[]) => void }) {
-  const [FIRST, SET_FIRST] = useState(''); const [SECOND, SET_SECOND] = useState(''); const [ERROR, SET_ERROR] = useState('');
-  const PLAYERS = game.players ?? [];
-  const picker = (label: string, selected: string, select: (name: string) => void) => <div className="rank-picker"><label>{label}</label><div className="chip-list">{PLAYERS.map(PLAYER => <button className={`chip ${selected === PLAYER.name ? 'selected' : ''}`} key={PLAYER.name} onClick={() => select(PLAYER.name)}>{PLAYER.name}</button>)}</div></div>;
-  return <><div className="player-entry">{picker('1등 (+2점)', FIRST, NAME => { SET_FIRST(NAME); if (SECOND === NAME) SET_SECOND(''); })}{picker('2등 (+1점)', SECOND, NAME => { SET_SECOND(NAME); if (FIRST === NAME) SET_FIRST(''); })}</div><p className={`error ${ERROR ? 'show' : ''}`}>{ERROR}</p><button className="btn block" onClick={() => { if (!FIRST || !SECOND) { SET_ERROR('1등과 2등을 모두 선택해주세요.'); return; } onSubmit(PLAYERS.map(PLAYER => PLAYER.name === FIRST ? 2 : PLAYER.name === SECOND ? 1 : 0)); }}>이번 판 기록</button></>;
+function ZhengEntry({ onSubmit }: { onSubmit: (scores: number[]) => void }) {
+  const [SCORE, SET_SCORE] = useState<number | null>(null);
+  const [ERROR, SET_ERROR] = useState('');
+  const OPTIONS = [{ label: '1등 (+2점)', score: 2 }, { label: '2등 (+1점)', score: 1 }, { label: '그 외 (0점)', score: 0 }];
+  return <><div className="player-entry"><div className="rank-picker"><label>이번 판 나의 순위</label><div className="chip-list">{OPTIONS.map(OPTION => <button className={`chip ${SCORE === OPTION.score ? 'selected' : ''}`} key={OPTION.score} onClick={() => { SET_SCORE(OPTION.score); SET_ERROR(''); }}>{OPTION.label}</button>)}</div></div></div><p className={`error ${ERROR ? 'show' : ''}`}>{ERROR}</p><button className="btn block" onClick={() => { if (SCORE === null) { SET_ERROR('나의 순위를 선택해주세요.'); return; } onSubmit([SCORE]); }}>이번 판 기록</button></>;
 }

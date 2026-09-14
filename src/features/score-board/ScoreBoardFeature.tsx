@@ -29,7 +29,7 @@ export function ScoreBoardFeature({ onQuit, onFinish }: { onQuit: () => void; on
         if (!SHOULD_FINISH && (!NEXT.skullkingCustomMode || NEXT.skullkingAutoAdvance !== false)) NEXT.round += 1;
       } else {
         const RANKED = [...UPDATED_ENTITIES].sort((FIRST, SECOND) => SECOND.total - FIRST.total);
-        SHOULD_FINISH = NEXT.gameId === 'tichu' && ((NEXT.tichuMode === 'team' && RANKED[0].total >= TICHU_TEAM_TARGET && RANKED[0].total !== RANKED[1].total) || (NEXT.tichuMode === 'zheng' && RANKED[0].total >= TICHU_ZHENG_TARGET && RANKED[0].total !== RANKED[1].total));
+        SHOULD_FINISH = NEXT.gameId === 'tichu' && ((NEXT.tichuMode === 'team' && RANKED[0].total >= TICHU_TEAM_TARGET && RANKED[0].total !== RANKED[1].total) || (NEXT.tichuMode === 'zheng' && RANKED[0].total >= TICHU_ZHENG_TARGET));
         NEXT.round += 1;
       }
       return NEXT;

@@ -4,9 +4,9 @@ import type { FriendRow, Profile } from '../../shared/data/types';
 
 export interface SetupResult { names: string[]; membersA: string[]; membersB: string[]; participantUserIds: Record<string, string>; }
 
-export function PlayerSetupFeature({ profile, guestOnly, allowSelf = false, team, min, max, onStart, onBack }: {
+export function PlayerSetupFeature({ profile, guestOnly, allowSelf = false, team, min, max, starting = false, onStart, onBack }: {
   profile: Profile | null;
-  guestOnly: boolean; allowSelf?: boolean; team: boolean; min: number; max: number;
+  guestOnly: boolean; allowSelf?: boolean; team: boolean; min: number; max: number; starting?: boolean;
   onStart: (result: SetupResult) => void; onBack: () => void;
 }) {
   const FRIENDS = useFriendsQuery(Boolean(profile) && !guestOnly);
@@ -25,6 +25,8 @@ export function PlayerSetupFeature({ profile, guestOnly, allowSelf = false, team
     return ACCEPTED_FRIENDS.filter(FRIEND => !SELECTED_FRIENDS.some(SELECTED => SELECTED.user_id === FRIEND.user_id))
       .filter(FRIEND => FRIEND.presence_status !== 'offline' || Boolean(QUERY && (`${FRIEND.display_name} ${FRIEND.login_id}`).toLowerCase().includes(QUERY)))
       .sort((FIRST, SECOND) => {
+        const PLAYING_ORDER = Number(FIRST.presence_status === 'playing') - Number(SECOND.presence_status === 'playing');
+        if (PLAYING_ORDER) return PLAYING_ORDER;
         if (!QUERY) return FIRST.display_name.localeCompare(SECOND.display_name, 'ko');
         const FIRST_MATCH = (`${FIRST.display_name} ${FIRST.login_id}`).toLowerCase().includes(QUERY);
         const SECOND_MATCH = (`${SECOND.display_name} ${SECOND.login_id}`).toLowerCase().includes(QUERY);
@@ -86,7 +88,7 @@ export function PlayerSetupFeature({ profile, guestOnly, allowSelf = false, team
       {!guestOnly && profile && <div className="friend-suggestions"><div className="friend-suggestions-title"><strong>{INPUT.trim() ? '친구 검색 결과' : '현재 접속 중인 친구'}</strong><span>30초마다 갱신</span></div>
         {FRIENDS.isLoading && <p className="friend-suggestions-empty">친구 상태를 불러오는 중…</p>}
         {!FRIENDS.isLoading && !VISIBLE_FRIENDS.length && <p className="friend-suggestions-empty">{INPUT.trim() ? '일치하는 친구가 없어요.' : '현재 접속 중인 친구가 없어요.'}</p>}
-        {VISIBLE_FRIENDS.map(FRIEND => <button className="friend-suggestion" key={FRIEND.user_id} onClick={() => addFriend(FRIEND)}><span><strong>{FRIEND.display_name}</strong><small>@{FRIEND.login_id}</small></span><span className={`presence ${FRIEND.presence_status}`}><i/>{FRIEND.presence_status === 'playing' ? '게임 중' : FRIEND.presence_status === 'online' ? '온라인' : '오프라인'}</span></button>)}
+        {VISIBLE_FRIENDS.map(FRIEND => <button className={`friend-suggestion ${FRIEND.presence_status === 'playing' ? 'unavailable' : ''}`} disabled={FRIEND.presence_status === 'playing'} key={FRIEND.user_id} onClick={() => addFriend(FRIEND)}><span><strong>{FRIEND.display_name}</strong><small>@{FRIEND.login_id}</small></span><span className={`presence ${FRIEND.presence_status}`}><i/>{FRIEND.presence_status === 'playing' ? '게임 중 · 선택 불가' : FRIEND.presence_status === 'online' ? '온라인' : '오프라인'}</span></button>)}
       </div>}
       <button className="btn ghost block guest-add-button" disabled={!INPUT.trim()} onClick={addName}>👤 {INPUT.trim() ? `“${INPUT.trim()}” 게스트로 추가` : '이름을 입력해 게스트로 추가'}</button>
       <p className={`error ${ERROR ? 'show' : ''}`}>{ERROR}</p>
@@ -94,6 +96,6 @@ export function PlayerSetupFeature({ profile, guestOnly, allowSelf = false, team
     {team && <div className="card"><h2>팀 나누기</h2><div className="team-cols">
       {[['팀 A', MEMBERS_A], ['팀 B', MEMBERS_B]].map(([LABEL, MEMBERS]) => <div className="team-box" key={LABEL as string}><h3>{LABEL}</h3>{(MEMBERS as string[]).map(NAME => <button key={NAME} className="chip selected" onClick={() => SET_TEAM_A(CURRENT => CURRENT.includes(NAME) ? CURRENT.filter(ITEM => ITEM !== NAME) : [...CURRENT, NAME])}>{NAME}</button>)}</div>)}
     </div><p className="hint">이름을 누르면 반대 팀으로 이동해요.</p></div>}
-    <button className="btn block" onClick={start}>게임 시작</button><button className="btn ghost block" onClick={onBack}>← 이전</button>
+    <button className="btn block" disabled={starting} onClick={start}>{starting ? '게임을 시작하는 중…' : '게임 시작'}</button><button className="btn ghost block" disabled={starting} onClick={onBack}>← 이전</button>
   </section>;
 }

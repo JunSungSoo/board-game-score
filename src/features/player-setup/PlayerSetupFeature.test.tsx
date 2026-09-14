@@ -40,6 +40,20 @@ describe('participant friend suggestions', () => {
     expect(ON_START).toHaveBeenCalledWith(expect.objectContaining({ names: ['온라인 친구'], participantUserIds: { '온라인 친구': 'one' } }));
   });
 
+  it('shows friends who are playing at the bottom and prevents selecting them', async () => {
+    const PLAYING: FriendRow = { id: 'three', user_id: 'three', login_id: 'playing-id', display_name: '게임 중 친구', friendship_id: 3, relationship: 'accepted', presence_status: 'playing' };
+    vi.mocked(useFriendsQuery).mockReturnValue({ data: [PLAYING, ...FRIENDS], isLoading: false } as ReturnType<typeof useFriendsQuery>);
+    render(<PlayerSetupFeature profile={PROFILE} guestOnly={false} team={false} min={1} max={8} onStart={vi.fn()} onBack={vi.fn()} />);
+
+    const ONLINE = screen.getByRole('button', { name: /온라인 친구/ });
+    const UNAVAILABLE = screen.getByRole('button', { name: /게임 중 친구/ });
+    expect(UNAVAILABLE).toBeDisabled();
+    expect(ONLINE.compareDocumentPosition(UNAVAILABLE) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    await userEvent.click(UNAVAILABLE);
+    expect(screen.queryByRole('button', { name: /● 게임 중 친구/ })).not.toBeInTheDocument();
+  });
+
   it('adds the signed-in user and user id when self participation is checked', async () => {
     const ON_START = vi.fn();
     vi.mocked(useFriendsQuery).mockReturnValue({ data: FRIENDS, isLoading: false } as ReturnType<typeof useFriendsQuery>);
