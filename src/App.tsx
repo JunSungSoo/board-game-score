@@ -12,6 +12,7 @@ const GAME_PAGE = lazy(() => import('./pages/game/GamePage').then(MODULE => ({ d
 const HOME_PAGE = lazy(() => import('./pages/home/HomePage').then(MODULE => ({ default: MODULE.HomePage })));
 const HISTORY_PAGE = lazy(() => import('./pages/history/HistoryPage').then(MODULE => ({ default: MODULE.HistoryPage })));
 const RANKING_PAGE = lazy(() => import('./pages/ranking/RankingPage').then(MODULE => ({ default: MODULE.RankingPage })));
+const GAME_GUIDE_PAGE = lazy(() => import('./pages/game-guide/GameGuidePage').then(MODULE => ({ default: MODULE.GameGuidePage })));
 
 function ProtectedRoute() {
   const AUTH = useAuthSession();
@@ -28,6 +29,9 @@ export default function App() {
       <Route path={APP_ROUTES.FRIENDS} element={<HOME_PAGE />} />
       <Route path={APP_ROUTES.GAME_HISTORY} element={<HISTORY_PAGE />} />
       <Route path={APP_ROUTES.RANK} element={<RANKING_PAGE />} />
+      <Route path={APP_ROUTES.GAME_GUIDE} element={<GAME_GUIDE_PAGE />} />
+      <Route path={`${APP_ROUTES.GAME_GUIDE}/:slug`} element={<GAME_GUIDE_PAGE />} />
+      <Route path={`${APP_ROUTES.GAME_GUIDE}/:slug/:versionKey`} element={<GAME_GUIDE_PAGE />} />
       <Route path="/game/*" element={<GAME_PAGE />} />
       <Route path="/" element={<Navigate to={APP_ROUTES.FRIENDS} replace />} />
       <Route path="/games" element={<Navigate to={APP_ROUTES.GAME_SELECT} replace />} />

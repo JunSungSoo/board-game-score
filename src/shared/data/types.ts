@@ -81,3 +81,26 @@ export interface RankingRow {
   wins: number;
   games: number;
 }
+
+export interface GameGuideRow {
+  id: number;
+  slug: string;
+  version_key: string;
+  title_ko: string;
+  title_en: string;
+  aliases: string[];
+  edition_label: string;
+  release_year: number | null;
+  player_count: string;
+  play_time: string;
+  goal: string;
+  setup: string[];
+  gameplay: string[];
+  special_rules: string[];
+  pirate_abilities: string[];
+  scoring: string[];
+  end_condition: string;
+  source_name: string;
+  source_url: string;
+  sort_order: number;
+}

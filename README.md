@@ -45,6 +45,8 @@ secret/service_role 키와 비밀번호는 넣지 않습니다. 데이터 접근
 도메인 변경 SQL의 원격 적용 여부는 별도 확인이 필요합니다.
 가상 이메일 방식은 이메일 확인 기능이 꺼져 있어야 합니다.
 기존 도메인으로 생성된 계정이 있다면 별도의 계정 식별자 이전이 필요합니다.
+게임 방법 초기 데이터는 `supabase/game-guides.sql`, 상세 카드·역할 규칙은
+`supabase/expand-game-guide-rules.sql` 순서로 실행합니다. 두 SQL은 모두 재실행할 수 있습니다.
 
 ## GitHub / 배포
 

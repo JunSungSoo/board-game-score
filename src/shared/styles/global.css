@@ -175,6 +175,7 @@
   .side-menu-header { font-weight: 700; font-size: 1.05rem; margin-bottom: 8px; }
   .side-menu-divider { height: 1px; background: var(--line); margin: 6px 0; }
   .account-menu-item { color: var(--accent-deep); }
+  .side-menu-home { font-weight: 700; }
   .side-menu-item {
     text-align: left;
     padding: 12px 14px;
@@ -954,6 +955,59 @@
   .ranking-record b, .ranking-record span { display: block; }
   .ranking-record span { margin-top: 3px; color: var(--muted); font-size: .75rem; }
   .empty-state { padding: 26px 8px; color: var(--muted); font-size: .82rem; font-weight: 400 !important; text-align: center; }
+  .game-guide-content { margin-top: 24px; }
+  .game-guide-list, .game-guide-detail { display: grid; gap: 12px; }
+  .game-guide-search label { display: block; margin-bottom: 8px; font-size: .85rem; font-weight: 700; }
+  .game-guide-search input {
+    width: 100%;
+    padding: 12px 13px;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    font: inherit;
+  }
+  .game-guide-search input:focus { outline: none; border-color: var(--accent); box-shadow: var(--focus-ring); }
+  .game-guide-results, .edition-options { display: grid; gap: 8px; }
+  .edition-options { margin-top: 16px; }
+  .game-guide-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 72px;
+    padding: 14px 16px;
+    color: var(--text);
+    background: rgba(255, 255, 255, .96);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    box-shadow: var(--shadow);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .game-guide-card:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .game-guide-card:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  .game-guide-card strong, .game-guide-card small { display: block; }
+  .game-guide-card strong { font-size: 1rem; }
+  .game-guide-card small { margin-top: 5px; color: var(--muted); font-size: .75rem; line-height: 1.45; }
+  .game-guide-arrow { flex: 0 0 auto; color: var(--accent-deep); font-size: 1.6rem; }
+  .game-guide-back { justify-self: end; padding: 9px 12px !important; font-size: .82rem !important; }
+  .game-guide-article { padding: 20px 18px; }
+  .game-guide-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .game-guide-title h2 { margin: 0; }
+  .game-guide-title p { margin-top: 4px; color: var(--muted); font-size: .78rem; }
+  .game-guide-title > span { flex: 0 0 auto; max-width: 48%; padding: 5px 8px; color: var(--accent-deep); background: var(--accent-soft); border-radius: 7px; font-size: .7rem; font-weight: 700; text-align: center; }
+  .game-guide-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0 4px; }
+  .game-guide-meta span { padding: 6px 9px; color: var(--muted); background: var(--card-soft); border: 1px solid var(--line); border-radius: 7px; font-size: .75rem; }
+  .game-guide-section { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .game-guide-section h3 { margin-bottom: 8px; color: var(--accent-deep); font-size: .9rem; }
+  .game-guide-section p, .game-guide-section li { font-size: .85rem; line-height: 1.7; }
+  .game-guide-section ul { padding-left: 20px; }
+  .game-guide-section li + li { margin-top: 6px; }
+  .game-guide-source { display: inline-block; margin-top: 20px; color: var(--muted); font-size: .72rem; }
   .edit-rounds-box {
     max-width: min(92vw, 640px);
     max-height: 86vh;
