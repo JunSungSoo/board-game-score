@@ -1,96 +1,68 @@
 import { useMemo, useState } from 'react';
-import { useFriendsQuery } from '../../shared/api/account';
-import type { FriendRow, Profile } from '../../shared/data/types';
+import { PRESET_PLAYER_NAMES } from '../../shared/data/game';
 
-export interface SetupResult { names: string[]; membersA: string[]; membersB: string[]; participantUserIds: Record<string, string>; }
+export interface SetupResult { names: string[]; membersA: string[]; membersB: string[]; }
 
-export function PlayerSetupFeature({ profile, guestOnly, allowSelf = false, team, min, max, starting = false, onStart, onBack }: {
-  profile: Profile | null;
-  guestOnly: boolean; allowSelf?: boolean; team: boolean; min: number; max: number; starting?: boolean;
+export function PlayerSetupFeature({ team, min, max, starting = false, onStart, onBack }: {
+  team: boolean; min: number; max: number; starting?: boolean;
   onStart: (result: SetupResult) => void; onBack: () => void;
 }) {
-  const FRIENDS = useFriendsQuery(Boolean(profile) && !guestOnly);
-  const [SELF_INCLUDED, SET_SELF_INCLUDED] = useState(false);
-  const [SELECTED_FRIENDS, SET_SELECTED_FRIENDS] = useState<FriendRow[]>([]);
+  const [SELECTED_PRESETS, SET_SELECTED_PRESETS] = useState<string[]>([]);
   const [GUESTS, SET_GUESTS] = useState<string[]>([]);
   const [INPUT, SET_INPUT] = useState('');
   const [TEAM_A, SET_TEAM_A] = useState<string[]>([]);
   const [ERROR, SET_ERROR] = useState('');
-  const ACCEPTED_FRIENDS = useMemo(() => (FRIENDS.data ?? []).filter(FRIEND => FRIEND.relationship === 'accepted'), [FRIENDS.data]);
-  const NAMES = useMemo(() => [...(SELF_INCLUDED && profile ? [profile.display_name] : []), ...SELECTED_FRIENDS.map(FRIEND => FRIEND.display_name), ...GUESTS], [GUESTS, profile, SELECTED_FRIENDS, SELF_INCLUDED]);
+  const NAMES = useMemo(() => [...SELECTED_PRESETS, ...GUESTS], [GUESTS, SELECTED_PRESETS]);
   const MEMBERS_A = NAMES.filter(NAME => TEAM_A.includes(NAME));
   const MEMBERS_B = NAMES.filter(NAME => !TEAM_A.includes(NAME));
-  const VISIBLE_FRIENDS = useMemo(() => {
-    const QUERY = INPUT.trim().toLowerCase();
-    return ACCEPTED_FRIENDS.filter(FRIEND => !SELECTED_FRIENDS.some(SELECTED => SELECTED.user_id === FRIEND.user_id))
-      .filter(FRIEND => FRIEND.presence_status !== 'offline' || Boolean(QUERY && (`${FRIEND.display_name} ${FRIEND.login_id}`).toLowerCase().includes(QUERY)))
-      .sort((FIRST, SECOND) => {
-        const PLAYING_ORDER = Number(FIRST.presence_status === 'playing') - Number(SECOND.presence_status === 'playing');
-        if (PLAYING_ORDER) return PLAYING_ORDER;
-        if (!QUERY) return FIRST.display_name.localeCompare(SECOND.display_name, 'ko');
-        const FIRST_MATCH = (`${FIRST.display_name} ${FIRST.login_id}`).toLowerCase().includes(QUERY);
-        const SECOND_MATCH = (`${SECOND.display_name} ${SECOND.login_id}`).toLowerCase().includes(QUERY);
-        return Number(SECOND_MATCH) - Number(FIRST_MATCH) || FIRST.display_name.localeCompare(SECOND.display_name, 'ko');
-      });
-  }, [ACCEPTED_FRIENDS, INPUT, SELECTED_FRIENDS]);
 
-  function addName() {
-    const NAME = INPUT.trim();
-    if (!NAME || NAMES.includes(NAME)) { SET_ERROR('비어 있거나 이미 있는 이름이에요.'); return; }
-    if (NAMES.length >= max) { SET_ERROR(`최대 ${max}명까지 참가할 수 있어요.`); return; }
-    SET_GUESTS(CURRENT => [...CURRENT, NAME]);
-    SET_TEAM_A(CURRENT => MEMBERS_A.length <= MEMBERS_B.length ? [...CURRENT, NAME] : CURRENT);
-    SET_INPUT(''); SET_ERROR('');
+  function addToSmallerTeam(name: string) {
+    if (MEMBERS_A.length <= MEMBERS_B.length) SET_TEAM_A(CURRENT => [...CURRENT, name]);
   }
 
-  function addFriend(friend: FriendRow) {
-    if (NAMES.length >= max) { SET_ERROR(`최대 ${max}명까지 참가할 수 있어요.`); return; }
-    if (NAMES.includes(friend.display_name)) { SET_ERROR('동일한 이름의 참가자가 이미 있어요.'); return; }
-    SET_SELECTED_FRIENDS(CURRENT => [...CURRENT, friend]);
-    if (MEMBERS_A.length <= MEMBERS_B.length) SET_TEAM_A(CURRENT => [...CURRENT, friend.display_name]);
-    SET_INPUT(''); SET_ERROR('');
-  }
-
-  function removeFriend(friend: FriendRow) {
-    SET_SELECTED_FRIENDS(CURRENT => CURRENT.filter(ITEM => ITEM.user_id !== friend.user_id));
-    SET_TEAM_A(CURRENT => CURRENT.filter(ITEM => ITEM !== friend.display_name));
-  }
-
-  function toggleSelf() {
-    if (!profile) return;
-    if (SELF_INCLUDED) {
-      SET_SELF_INCLUDED(false);
-      SET_TEAM_A(CURRENT => CURRENT.filter(NAME => NAME !== profile.display_name));
+  function togglePreset(name: string) {
+    if (SELECTED_PRESETS.includes(name)) {
+      SET_SELECTED_PRESETS(CURRENT => CURRENT.filter(ITEM => ITEM !== name));
+      SET_TEAM_A(CURRENT => CURRENT.filter(ITEM => ITEM !== name));
       return;
     }
-    if (NAMES.includes(profile.display_name)) { SET_ERROR('동일한 이름의 참가자가 이미 있어요.'); return; }
     if (NAMES.length >= max) { SET_ERROR(`최대 ${max}명까지 참가할 수 있어요.`); return; }
-    SET_SELF_INCLUDED(true);
-    if (MEMBERS_A.length <= MEMBERS_B.length) SET_TEAM_A(CURRENT => [...CURRENT, profile.display_name]);
+    SET_SELECTED_PRESETS(CURRENT => [...CURRENT, name]);
+    addToSmallerTeam(name);
     SET_ERROR('');
+  }
+
+  function addGuest() {
+    const NAME = INPUT.trim();
+    if (!NAME) { SET_ERROR('게스트 이름을 입력해주세요.'); return; }
+    if (PRESET_PLAYER_NAMES.includes(NAME as typeof PRESET_PLAYER_NAMES[number]) || NAMES.includes(NAME)) { SET_ERROR('이미 있는 이름이에요. 다른 이름을 입력해주세요.'); return; }
+    if (NAMES.length >= max) { SET_ERROR(`최대 ${max}명까지 참가할 수 있어요.`); return; }
+    SET_GUESTS(CURRENT => [...CURRENT, NAME]);
+    addToSmallerTeam(NAME);
+    SET_INPUT('');
+    SET_ERROR('');
+  }
+
+  function removeGuest(name: string) {
+    SET_GUESTS(CURRENT => CURRENT.filter(ITEM => ITEM !== name));
+    SET_TEAM_A(CURRENT => CURRENT.filter(ITEM => ITEM !== name));
   }
 
   function start() {
     if (NAMES.length < min || NAMES.length > max) { SET_ERROR(`${min}~${max}명의 참가자가 필요해요.`); return; }
     if (team && (!MEMBERS_A.length || !MEMBERS_B.length)) { SET_ERROR('각 팀에 최소 1명씩 있어야 해요.'); return; }
-    onStart({ names: NAMES, membersA: MEMBERS_A, membersB: MEMBERS_B, participantUserIds: Object.fromEntries([...(SELF_INCLUDED && profile ? [[profile.display_name, profile.id] as const] : []), ...SELECTED_FRIENDS.map(FRIEND => [FRIEND.display_name, FRIEND.user_id] as const)]) });
+    onStart({ names: NAMES, membersA: MEMBERS_A, membersB: MEMBERS_B });
   }
 
   return <section className="screen active">
-    <div className="card"><h2>{guestOnly ? '참가 인원 등록' : '참가 인원 선택'}</h2>
-      {allowSelf && profile && <label className="custom-check-row participant-self-check"><input type="checkbox" checked={SELF_INCLUDED} onChange={toggleSelf}/><span>나({profile.display_name})도 참여</span></label>}
-      <div className="chip-list">
-        {SELF_INCLUDED && profile && <button className="chip selected" onClick={toggleSelf}>★ {profile.display_name} (나) ✕</button>}
-        {SELECTED_FRIENDS.map(FRIEND => <button key={FRIEND.user_id} className="chip selected" onClick={() => removeFriend(FRIEND)}>● {FRIEND.display_name} ✕</button>)}
-        {GUESTS.map(NAME => <button key={NAME} className="chip selected" onClick={() => { SET_GUESTS(CURRENT => CURRENT.filter(ITEM => ITEM !== NAME)); SET_TEAM_A(CURRENT => CURRENT.filter(ITEM => ITEM !== NAME)); }}>👤 {NAME} ✕</button>)}
+    <div className="card"><h2>참가 인원 선택</h2>
+      <p className="field-label">고정 인원</p>
+      <div className="chip-list preset-player-list">
+        {PRESET_PLAYER_NAMES.map(NAME => <button key={NAME} className={`chip ${SELECTED_PRESETS.includes(NAME) ? 'selected' : ''}`} onClick={() => togglePreset(NAME)}>{NAME}</button>)}
+        {GUESTS.map(NAME => <button key={NAME} className="chip selected" onClick={() => removeGuest(NAME)}>👤 {NAME} ✕</button>)}
       </div>
-      <div className="guest-row participant-search-row"><input value={INPUT} maxLength={20} placeholder="참가자 이름 입력" onChange={event => { SET_INPUT(event.target.value); SET_ERROR(''); }} onKeyDown={event => { if (event.key === 'Enter') addName(); }} /></div>
-      {!guestOnly && profile && <div className="friend-suggestions"><div className="friend-suggestions-title"><strong>{INPUT.trim() ? '친구 검색 결과' : '현재 접속 중인 친구'}</strong><span>30초마다 갱신</span></div>
-        {FRIENDS.isLoading && <p className="friend-suggestions-empty">친구 상태를 불러오는 중…</p>}
-        {!FRIENDS.isLoading && !VISIBLE_FRIENDS.length && <p className="friend-suggestions-empty">{INPUT.trim() ? '일치하는 친구가 없어요.' : '현재 접속 중인 친구가 없어요.'}</p>}
-        {VISIBLE_FRIENDS.map(FRIEND => <button className={`friend-suggestion ${FRIEND.presence_status === 'playing' ? 'unavailable' : ''}`} disabled={FRIEND.presence_status === 'playing'} key={FRIEND.user_id} onClick={() => addFriend(FRIEND)}><span><strong>{FRIEND.display_name}</strong><small>@{FRIEND.login_id}</small></span><span className={`presence ${FRIEND.presence_status}`}><i/>{FRIEND.presence_status === 'playing' ? '게임 중 · 선택 불가' : FRIEND.presence_status === 'online' ? '온라인' : '오프라인'}</span></button>)}
-      </div>}
-      <button className="btn ghost block guest-add-button" disabled={!INPUT.trim()} onClick={addName}>👤 {INPUT.trim() ? `“${INPUT.trim()}” 게스트로 추가` : '이름을 입력해 게스트로 추가'}</button>
+      <div className="guest-row participant-search-row"><input value={INPUT} maxLength={20} placeholder="게스트 이름 입력" onChange={EVENT => { SET_INPUT(EVENT.target.value); SET_ERROR(''); }} onKeyDown={EVENT => { if (EVENT.key === 'Enter') addGuest(); }} /></div>
+      <button className="btn ghost block guest-add-button" disabled={!INPUT.trim()} onClick={addGuest}>👤 {INPUT.trim() ? `“${INPUT.trim()}” 게스트로 추가` : '게스트 이름을 입력해 추가'}</button>
       <p className={`error ${ERROR ? 'show' : ''}`}>{ERROR}</p>
     </div>
     {team && <div className="card"><h2>팀 나누기</h2><div className="team-cols">

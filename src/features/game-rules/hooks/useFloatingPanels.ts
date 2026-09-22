@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export type FloatingKey = 'score' | 'pirate';
 interface Point { x: number; y: number; }
@@ -11,8 +11,19 @@ export function useFloatingPanels() {
   const [POSITIONS, SET_POSITIONS] = useState<Record<FloatingKey, Point>>({ score: { x: 8, y: 8 }, pirate: { x: 8, y: 260 } });
   const [FOCUSED_KEY, SET_FOCUSED_KEY] = useState<FloatingKey | null>(null);
   const [PAIRED, SET_PAIRED] = useState(false);
+  useEffect(() => {
+    const CLEAR_WHEN_OUTSIDE = (event: Event) => {
+      if (!(event.target instanceof Element) || !event.target.closest('[data-floating-panel]')) SET_FOCUSED_KEY(null);
+    };
+    document.addEventListener('pointerdown', CLEAR_WHEN_OUTSIDE, true);
+    document.addEventListener('focusin', CLEAR_WHEN_OUTSIDE, true);
+    return () => {
+      document.removeEventListener('pointerdown', CLEAR_WHEN_OUTSIDE, true);
+      document.removeEventListener('focusin', CLEAR_WHEN_OUTSIDE, true);
+    };
+  }, []);
   const show = (key: FloatingKey) => { SET_OPEN_KEYS(CURRENT => CURRENT.includes(key) ? CURRENT : [...CURRENT, key]); SET_FOCUSED_KEY(key); };
-  const hide = (key: FloatingKey) => { SET_OPEN_KEYS(CURRENT => CURRENT.filter(ITEM => ITEM !== key)); SET_PAIRED(false); };
+  const hide = (key: FloatingKey) => { SET_OPEN_KEYS(CURRENT => CURRENT.filter(ITEM => ITEM !== key)); SET_FOCUSED_KEY(CURRENT => CURRENT === key ? null : CURRENT); SET_PAIRED(false); };
   const beginDrag = useCallback((key: FloatingKey, event: React.PointerEvent<HTMLElement>) => {
     const PANEL = event.currentTarget.parentElement as HTMLElement;
     const START = { x: event.clientX, y: event.clientY, left: PANEL.offsetLeft, top: PANEL.offsetTop };
@@ -36,4 +47,3 @@ export function useFloatingPanels() {
   }, []);
   return { OPEN_KEYS, POSITIONS, FOCUSED_KEY, PAIRED, show, hide, beginDrag };
 }
-

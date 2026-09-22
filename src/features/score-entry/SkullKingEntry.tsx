@@ -15,6 +15,8 @@ export function SkullKingEntry({ game, onSubmit }: { game: GameState; onSubmit: 
   function submit() {
     if (game.mode === 'all' && USED_TRICKS !== game.round) { SET_ERROR(`전체 획득 트릭 합계(${USED_TRICKS})가 이번 라운드 트릭 수(${game.round})와 달라요.`); return; }
     onSubmit(DRAFTS.map(DRAFT => calculateSkullkingScore(game.round, DRAFT.bid, DRAFT.tricks, DRAFT.bonus).total));
+    SET_DRAFTS(PLAYERS.map(() => ({ bid: 0, tricks: 0, bonus: 0 })));
+    SET_ERROR('');
   }
   return <>
     {game.mode === 'all' && <p className="shared-trick-limit">전체 남은 획득 트릭: <b>{remainingTricks(game.round, DRAFTS.map(DRAFT => DRAFT.tricks))}</b> / {game.round}</p>}
@@ -28,4 +30,3 @@ export function SkullKingEntry({ game, onSubmit }: { game: GameState; onSubmit: 
     <p className={`error ${ERROR ? 'show' : ''}`}>{ERROR}</p><button className="btn block" onClick={submit}>라운드 점수 계산</button>
   </>;
 }
-

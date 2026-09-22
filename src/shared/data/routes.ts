@@ -1,7 +1,4 @@
 export const APP_ROUTES = {
-  FRIENDS: '/friends',
-  RANK: '/rank',
-  GAME_HISTORY: '/game-history',
   GAME_GUIDE: '/game-guide',
   GAME_SELECT: '/game/select',
   GAME_WRITE: '/game/write',

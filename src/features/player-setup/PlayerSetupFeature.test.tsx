@@ -1,67 +1,33 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { useFriendsQuery } from '../../shared/api/account';
-import type { FriendRow, Profile } from '../../shared/data/types';
 import { PlayerSetupFeature } from './PlayerSetupFeature';
-
-vi.mock('../../shared/api/account', () => ({ useFriendsQuery: vi.fn() }));
-
-const PROFILE: Profile = { id: 'me', login_id: 'me', display_name: '나' };
-const FRIENDS: FriendRow[] = [
-  { id: 'one', user_id: 'one', login_id: 'online-id', display_name: '온라인 친구', friendship_id: 1, relationship: 'accepted', presence_status: 'online' },
-  { id: 'two', user_id: 'two', login_id: 'offline-id', display_name: '오프라인 친구', friendship_id: 2, relationship: 'accepted', presence_status: 'offline' },
-];
 
 afterEach(cleanup);
 
-describe('participant friend suggestions', () => {
-  it('shows active friends by default and includes a matching offline friend while searching', async () => {
-    vi.mocked(useFriendsQuery).mockReturnValue({ data: FRIENDS, isLoading: false } as ReturnType<typeof useFriendsQuery>);
-    render(<PlayerSetupFeature profile={PROFILE} guestOnly={false} team={false} min={2} max={8} onStart={vi.fn()} onBack={vi.fn()} />);
-
-    expect(screen.getByText('온라인 친구')).toBeInTheDocument();
-    expect(screen.queryByText('오프라인 친구')).not.toBeInTheDocument();
-
-    await userEvent.type(screen.getByPlaceholderText('참가자 이름 입력'), '오프라인');
-    expect(screen.getByText('오프라인 친구')).toBeInTheDocument();
-    expect(screen.getByText('오프라인')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /“오프라인” 게스트로 추가/ })).toBeEnabled();
-  });
-
-  it('adds a selected friend with its user id', async () => {
+describe('fixed participant setup', () => {
+  it('selects fixed players and adds only manually entered guests', async () => {
     const ON_START = vi.fn();
-    vi.mocked(useFriendsQuery).mockReturnValue({ data: FRIENDS, isLoading: false } as ReturnType<typeof useFriendsQuery>);
-    render(<PlayerSetupFeature profile={PROFILE} guestOnly={false} team={false} min={1} max={8} onStart={ON_START} onBack={vi.fn()} />);
+    render(<PlayerSetupFeature team={false} min={2} max={8} onStart={ON_START} onBack={vi.fn()} />);
 
-    await userEvent.click(screen.getByRole('button', { name: /온라인 친구/ }));
+    expect(screen.getByRole('button', { name: '파비' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '효명' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '엘라' })).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: '파비' }));
+    await userEvent.type(screen.getByPlaceholderText('게스트 이름 입력'), '게스트');
+    await userEvent.click(screen.getByRole('button', { name: /게스트로 추가/ }));
     await userEvent.click(screen.getByRole('button', { name: '게임 시작' }));
 
-    expect(ON_START).toHaveBeenCalledWith(expect.objectContaining({ names: ['온라인 친구'], participantUserIds: { '온라인 친구': 'one' } }));
+    expect(ON_START).toHaveBeenCalledWith({ names: ['파비', '게스트'], membersA: ['파비'], membersB: ['게스트'] });
   });
 
-  it('shows friends who are playing at the bottom and prevents selecting them', async () => {
-    const PLAYING: FriendRow = { id: 'three', user_id: 'three', login_id: 'playing-id', display_name: '게임 중 친구', friendship_id: 3, relationship: 'accepted', presence_status: 'playing' };
-    vi.mocked(useFriendsQuery).mockReturnValue({ data: [PLAYING, ...FRIENDS], isLoading: false } as ReturnType<typeof useFriendsQuery>);
-    render(<PlayerSetupFeature profile={PROFILE} guestOnly={false} team={false} min={1} max={8} onStart={vi.fn()} onBack={vi.fn()} />);
+  it('does not allow a fixed player name to be added as a guest', async () => {
+    render(<PlayerSetupFeature team={false} min={1} max={8} onStart={vi.fn()} onBack={vi.fn()} />);
 
-    const ONLINE = screen.getByRole('button', { name: /온라인 친구/ });
-    const UNAVAILABLE = screen.getByRole('button', { name: /게임 중 친구/ });
-    expect(UNAVAILABLE).toBeDisabled();
-    expect(ONLINE.compareDocumentPosition(UNAVAILABLE) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    await userEvent.type(screen.getByPlaceholderText('게스트 이름 입력'), '파비');
+    await userEvent.click(screen.getByRole('button', { name: /게스트로 추가/ }));
 
-    await userEvent.click(UNAVAILABLE);
-    expect(screen.queryByRole('button', { name: /● 게임 중 친구/ })).not.toBeInTheDocument();
-  });
-
-  it('adds the signed-in user and user id when self participation is checked', async () => {
-    const ON_START = vi.fn();
-    vi.mocked(useFriendsQuery).mockReturnValue({ data: FRIENDS, isLoading: false } as ReturnType<typeof useFriendsQuery>);
-    render(<PlayerSetupFeature profile={PROFILE} guestOnly={false} allowSelf team={false} min={1} max={8} onStart={ON_START} onBack={vi.fn()} />);
-
-    await userEvent.click(screen.getByRole('checkbox', { name: '나(나)도 참여' }));
-    await userEvent.click(screen.getByRole('button', { name: '게임 시작' }));
-
-    expect(ON_START).toHaveBeenCalledWith(expect.objectContaining({ names: ['나'], participantUserIds: { '나': 'me' } }));
+    expect(screen.getByText('이미 있는 이름이에요. 다른 이름을 입력해주세요.')).toBeVisible();
   });
 });
