@@ -1,25 +1,20 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGameGuidesQuery } from '../../shared/api/game-guides';
+import { GAME_GUIDES } from '../../shared/data/game-guides';
 import { APP_ROUTES } from '../../shared/data/routes';
 import type { GameGuideRow } from '../../shared/data/types';
-import { LoadingScreen } from '../../shared/ui/LoadingScreen';
 
 const NORMALIZE = (value: string) => value.toLocaleLowerCase('ko').replace(/\s+/g, '');
 
 export function GameGuideFeature() {
-  const GUIDES = useGameGuidesQuery();
   const NAVIGATE = useNavigate();
   const { slug, versionKey } = useParams();
   const [QUERY, SET_QUERY] = useState('');
   const GROUPS = useMemo(() => {
     const MAP = new Map<string, GameGuideRow[]>();
-    for (const GUIDE of GUIDES.data ?? []) MAP.set(GUIDE.slug, [...(MAP.get(GUIDE.slug) ?? []), GUIDE]);
+    for (const GUIDE of GAME_GUIDES) MAP.set(GUIDE.slug, [...(MAP.get(GUIDE.slug) ?? []), GUIDE]);
     return [...MAP.values()];
-  }, [GUIDES.data]);
-
-  if (GUIDES.isLoading) return <LoadingScreen />;
-  if (GUIDES.error) return <section className="card account-page-card"><p className="empty-state">보드게임 설명서를 불러오지 못했어요.</p></section>;
+  }, []);
 
   if (!slug) {
     const TERM = NORMALIZE(QUERY);
